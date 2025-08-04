@@ -1,7 +1,7 @@
 # Slurm Guide
 
-Welcome to the slurm guide!
-This quick guide will walk you through using slurm in the cheese cluster.
+Welcome to the Slurm guide!
+This quick guide will walk you through using Slurm in the cheese cluster.
 
 ## Why are we using Slurm?
 We have a few reasons:
@@ -19,7 +19,7 @@ This currently includes:
   * limburger
   * jarlsberg
   * manchego
-  * v-test-phi[0,1]
+  * v-test-phi[0..3]
 
 We have also enrolled Burrata in the cluster, but your jobs will ***NOT*** be sent to burrata by default.
 We did this to give people fewer surprises when developing their software.
@@ -35,7 +35,7 @@ There is **exactly** one command for each of these:
   2. `salloc`
 
 Any job you submit will run ***as your user***!
-Mind that the only storage shared across all nodes in `/tank` and when you rjob is running (either in batch or interactive mode) you are working with that node's ***local*** storage.
+Mind that the only storage shared across all nodes in `/tank` and when your job is running (either in batch or interactive mode) you are working with that node's ***local*** storage.
 This is another good reason to leverage `/tank`!
 
 Since different nodes may have different software installed, we recommend you make use of Nix and Nix flakes to pull in your project dependencies when possible.
@@ -128,7 +128,7 @@ If you want an interactive shell on the allocation, you need to use `--pty` flag
 
 There is NO way to detach from an interactive allocation easily.
 You need to use another tool, like tmux, to achieve this behavior.
-In summary, you CAN attach to an allocation after requesting it, but you CANNOT detach from an allocation that was immediately opened as interactive (an allocatoin that immediately opens a shell).
+In summary, you CAN attach to an allocation after requesting it, but you CANNOT detach from an allocation that was immediately opened as interactive (an allocation that immediately opens a shell).
 
 Below is an example of requesting an allocation for an indefinite amount of time then delaying opening a shell until a later time.
 ```console
@@ -175,7 +175,7 @@ A contrived example of using all of these flags is shown below:
 
 ```console
 karl@dubliner:~$ sbatch -c 8 --mem 8G \
-                        --parition=intel --nodelist=manchego \
+                        --partition=intel --nodelist=manchego \
                         --exclusive \
                         example-batch-file.sh
 Submitted batch job 751
@@ -265,7 +265,7 @@ NodeName=jarlsberg Arch=x86_64 CoresPerSocket=24
 ```
 
 # Phi machines
-The phi machines (v-test-phi{0..3}) have been en-rolled into the cheese cave, users synced, `/tank` mounted, Nix installed (and flakes).
+The phi machines (v-test-phi{0..3}) have been enrolled into the cheese cave, users synced, `/tank` mounted, Nix installed (and flakes).
 All 4 phis are identical software-wise, and closely match the other machines in the cluster.
 
 You DO NOT want to develop on those machines!
@@ -279,7 +279,9 @@ We have varied across these two axes on our four machines to deliver (hopefully)
   * phi1 - Yes HT (256 cores), HBM Far
   * phi2 - No HT, HBM Near
   * phi3 - Yes HT, HBM Near
-"HBM Far" means the HBM is treated as very slow memory. "HBM Near" means the HBM is treated as a "very fast" cache.
+
+"HBM Far" means the HBM is treated as very slow memory and DRAM is preferred by Linux.
+"HBM Near" means the HBM is treated as a very fast L3-like cache.
 
 We ask that you do not log into the phis directly, but instead "request time" on them through Slurm (either `salloc` for interactive or `sbatch` for batch jobs, see the SLURM Getting Started file in `/tank` for more information), since these machines have such odd performance characteristics.
 We want to make sure your results are sensible vs. what hardware & software you are running on.
