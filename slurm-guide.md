@@ -156,6 +156,24 @@ karl@dubliner:~$ squeue
              JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
 ```
 
+# General Recommendations
+Here are some recommendations from us, the admins, about how you could use Slurm:
+  * `#SBATCH` comment-directives in your submitted script ***MUST*** come before any shell commands!
+    Comments before and after `#SBATCH` comment-directives are allowed, but Slurm stops looking for them as soon as the first non-comment shell command is found.
+  * Make sure your scripts record some unique component when writing outputs.
+    Slurm does this automatically with `STDOUT` on your behalf.
+    But if you create files/directories, then Slurm will not handle that for you and you must manually uniquify them.
+    We recommend either a timestamp or the job ID, as those will be quite unique over time.
+  * Try to make your script that runs inside the job fairly idempotent.
+    For example, it can assume it is running inside of Slurm, but it should not assume that the directory it is working on is your working copy.
+    Instead, make the working script assume a fresh copy of your work, and that one of the jobs of your Slurm job is to compile your test programs.
+    Obviously, this is not tenable for enormous compile jobs.
+    Use your best judgment.
+  * Take advantage of the `--chdir` flag on `sbatch` to change the working directory of the Slurm job.
+    You can build a submission directory that your job should work out of, which helps keep your working files separate from your job files.
+  * For very long `sbatch` runs, make use of `srun` to split the job up into steps.
+    Slurm can restart jobs that fail for a variety of reasons (your node went down, the server crashed, etc.), but only at the granularity of a step.
+
 # Useful Flags
 Here are a quick run-down of useful flags you can pass to some Slurm commands.
 Please check the documentation for each command (`man sbatch` for instance), as some flags may not be present on certain commands or behave slightly different.
